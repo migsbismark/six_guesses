@@ -2,19 +2,36 @@
   "use strict";
 
   const ROWS = 6;
-  const COLS = 6;
   const MAX_RETRIES = 3;
-  const WORD_API = "https://random-word-api.vercel.app/api?words=1&length=6";
+  const WORD_API_BASE = "https://random-word-api.vercel.app/api?words=1&length=";
 
-  // Fallback 6-letter words if API fails
-  const FALLBACK_WORDS = [
-    "BETTER", "LETTER", "MATTER", "RANDOM", "SAMPLE", "WINDOW", "GARDEN",
-    "PERSON", "NUMBER", "CHANGE", "SILVER", "GOLDEN", "BRIDGE", "CIRCLE",
-    "DOUBLE", "FAMILY", "GALAXY", "HARBOR", "ISLAND", "JUNGLE", "KETTLE",
-    "MONKEY", "NATURE", "ORANGE", "PURPLE", "QUARTZ", "RABBIT", "SPRING",
-    "TIGER", "VIOLET", "WINTER", "YELLOW", "ACTIVE", "BRIGHT", "CLEVER",
-    "DREAMY", "FLOWER", "EAGLES", "GALAXY", "HARBOR", "ISLAND", "JUNGLE"
-  ];
+  var COLS = 6; // current word length (4, 5, or 6)
+
+  const FALLBACK_WORDS = {
+    4: [
+      "BEAR", "BEST", "BOOK", "CAME", "DOOR", "FIND", "FOUR", "GAME", "GOOD", "HAND",
+      "HEAD", "HEAR", "HELP", "HIGH", "HOLD", "HOME", "KIND", "KNOW", "LAND", "LIFE",
+      "LONG", "LOOK", "LOVE", "MAKE", "MOST", "MUCH", "MUST", "NEED", "ONCE", "OVER",
+      "PART", "PLAN", "PLAY", "READ", "ROAD", "ROOM", "SAID", "SEEK", "SIDE", "TALK",
+      "THAN", "THAT", "THEM", "THEN", "THEY", "THIS", "TIME", "TRUE", "WANT", "WEEK"
+    ],
+    5: [
+      "ABOUT", "AFTER", "AGAIN", "BEING", "BLACK", "CHILD", "COULD", "EVERY",
+      "FIRST", "FOUND", "GIVEN", "GREAT", "GROUP", "HANDS", "HAVEN", "HOURS", "HOUSE",
+      "LARGE", "LEARN", "LIGHT", "LINES", "LITTLE", "LIVED", "MAKES", "MIGHT", "MONEY",
+      "NIGHT", "OTHER", "PLACE", "PLANT", "POINT", "RIGHT", "SMALL", "SOUND", "STATE",
+      "STILL", "STORY", "STUDY", "THING", "THINK", "THREE", "UNDER", "WATER", "WHERE",
+      "WHICH", "WORLD", "WOULD", "YEARS", "YOUNG"
+    ],
+    6: [
+      "BETTER", "LETTER", "MATTER", "RANDOM", "SAMPLE", "WINDOW", "GARDEN",
+      "PERSON", "NUMBER", "CHANGE", "SILVER", "GOLDEN", "BRIDGE", "CIRCLE",
+      "DOUBLE", "FAMILY", "GALAXY", "HARBOR", "ISLAND", "JUNGLE", "KETTLE",
+      "MONKEY", "NATURE", "ORANGE", "PURPLE", "QUARTZ", "RABBIT", "SPRING",
+      "TIGER", "VIOLET", "WINTER", "YELLOW", "ACTIVE", "BRIGHT", "CLEVER",
+      "DREAMY", "FLOWER", "EAGLES"
+    ]
+  };
 
   const GameState = {
     targetWord: "",
@@ -23,7 +40,7 @@
     guesses: [],
     evaluations: [],
     maxGuesses: ROWS,
-    wordLength: COLS,
+    wordLength: 6,
     isGameOver: false,
     isWon: false
   };
@@ -47,7 +64,14 @@
     return document.getElementById(id);
   }
 
+  function getWordLength() {
+    var sel = getEl("wordLength");
+    var n = parseInt(sel && sel.value ? sel.value : "6", 10);
+    return (n >= 4 && n <= 6) ? n : 6;
+  }
+
   function createBoard() {
+    COLS = GameState.wordLength;
     boardEl = getEl("gameBoard");
     boardEl.innerHTML = "";
     for (var r = 0; r < ROWS; r++) {
@@ -68,19 +92,20 @@
 
   function evaluateGuess(guess) {
     var target = GameState.targetWord.toUpperCase();
+    var len = GameState.wordLength;
     var result = [];
     var remaining = target.split("");
 
-    for (var i = 0; i < COLS; i++) {
+    for (var i = 0; i < len; i++) {
       result[i] = "gray";
     }
-    for (var i = 0; i < COLS; i++) {
+    for (var i = 0; i < len; i++) {
       if (guess[i] === target[i]) {
         result[i] = "green";
         remaining[i] = null;
       }
     }
-    for (var i = 0; i < COLS; i++) {
+    for (var i = 0; i < len; i++) {
       if (result[i] === "green") continue;
       var idx = remaining.indexOf(guess[i]);
       if (idx !== -1) {
@@ -94,7 +119,8 @@
   function applyEvaluation(rowIndex, letters, evals) {
     var row = boardEl.querySelector('.row[data-row="' + rowIndex + '"]');
     var tiles = row.querySelectorAll(".tile");
-    for (var i = 0; i < COLS; i++) {
+    var len = GameState.wordLength;
+    for (var i = 0; i < len; i++) {
       var t = tiles[i];
       t.textContent = letters[i];
       t.classList.remove("filled", "gray", "yellow", "green");
@@ -108,7 +134,7 @@
     for (var r = 0; r < GameState.evaluations.length; r++) {
       var letters = GameState.guesses[r].split("");
       var evals = GameState.evaluations[r];
-      for (var i = 0; i < COLS; i++) {
+      for (var i = 0; i < (letters.length && evals.length); i++) {
         var letter = letters[i];
         var status = evals[i];
         if (!best[letter] || status === "green" || (status === "yellow" && best[letter] === "gray")) {
@@ -126,12 +152,12 @@
   }
 
   function submitGuess() {
-    if (GameState.currentCol !== COLS || GameState.isGameOver) return;
+    if (GameState.currentCol !== GameState.wordLength || GameState.isGameOver) return;
 
     var letters = [];
     var row = boardEl.querySelector('.row[data-row="' + GameState.currentRow + '"]');
     var tiles = row.querySelectorAll(".tile");
-    for (var c = 0; c < COLS; c++) {
+    for (var c = 0; c < GameState.wordLength; c++) {
       letters.push(tiles[c].textContent);
     }
     var word = letters.join("").toUpperCase();
@@ -169,7 +195,7 @@
 
   function addLetter(letter) {
     if (GameState.isGameOver) return;
-    if (GameState.currentCol >= COLS) return;
+    if (GameState.currentCol >= GameState.wordLength) return;
     var row = boardEl.querySelector('.row[data-row="' + GameState.currentRow + '"]');
     var tile = row.querySelector('.tile[data-col="' + GameState.currentCol + '"]');
     tile.textContent = letter.toUpperCase();
@@ -188,32 +214,32 @@
     tile.classList.remove("filled");
   }
 
-  function fetchWord() {
-    return new Promise(function (resolve, reject) {
+  function fetchWord(length) {
+    length = length >= 4 && length <= 6 ? length : 6;
+    var list = FALLBACK_WORDS[length] || FALLBACK_WORDS[6];
+    return new Promise(function (resolve) {
       var attempt = 0;
       function tryFetch() {
         attempt++;
-        fetch(WORD_API)
+        fetch(WORD_API_BASE + length)
           .then(function (res) { return res.json(); })
           .then(function (arr) {
             var word = Array.isArray(arr) ? arr[0] : (arr.word || arr.randomWord || "");
             if (typeof word !== "string") word = "";
             word = word.toUpperCase().replace(/[^A-Z]/g, "");
-            if (word.length === 6) {
+            if (word.length === length) {
               resolve(word);
             } else if (attempt < MAX_RETRIES) {
               tryFetch();
             } else {
-              var fallback = FALLBACK_WORDS[Math.floor(Math.random() * FALLBACK_WORDS.length)];
-              resolve(fallback || "LETTER");
+              resolve(list[Math.floor(Math.random() * list.length)] || (length === 6 ? "LETTER" : list[0]));
             }
           })
           .catch(function () {
             if (attempt < MAX_RETRIES) {
               tryFetch();
             } else {
-              var fallback = FALLBACK_WORDS[Math.floor(Math.random() * FALLBACK_WORDS.length)];
-              resolve(fallback || "LETTER");
+              resolve(list[Math.floor(Math.random() * list.length)] || (length === 6 ? "LETTER" : list[0]));
             }
           });
       }
@@ -222,6 +248,7 @@
   }
 
   function resetGame() {
+    GameState.wordLength = getWordLength();
     GameState.targetWord = "";
     GameState.currentRow = 0;
     GameState.currentCol = 0;
@@ -238,7 +265,7 @@
     updateKeyColors();
 
     messageEl.textContent = "Loading word…";
-    fetchWord().then(function (word) {
+    fetchWord(GameState.wordLength).then(function (word) {
       GameState.targetWord = word;
       messageEl.textContent = "";
       updateStats();
@@ -341,9 +368,12 @@
     winStreakEl = getEl("winStreak");
 
     loadStats();
-    createBoard();
     buildKeyboard();
     updateStats();
+
+    getEl("startGame").addEventListener("click", function () {
+      resetGame();
+    });
 
     playAgainEl.addEventListener("click", function () {
       resetGame();

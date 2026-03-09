@@ -9,8 +9,16 @@
 <body>
   <div class="app">
     <header>
-      <h1>6-Letter Word</h1>
-      <h1>migsbismark20260308</h1>
+      <h1>Word Game</h1>
+      <label class="word-length-label">
+        Word length:
+        <select id="wordLength" aria-label="Number of letters in the word">
+          <option value="4">4 letters</option>
+          <option value="5">5 letters</option>
+          <option value="6" selected>6 letters</option>
+        </select>
+      </label>
+      <button type="button" class="start-game" id="startGame">Start Game</button>
     </header>
 
     <main>
