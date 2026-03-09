@@ -1,0 +1,220 @@
+/* --- Variables --- */
+:root {
+  --bg: #0f0f14;
+  --surface: #1a1a22;
+  --tile-empty: #2d2d3a;
+  --tile-gray: #3a3a4a;
+  --tile-yellow: #b59f3b;
+  --tile-green: #538d4e;
+  --text: #e8e8ed;
+  --text-dim: #8888a0;
+  --key-bg: #3a3a4a;
+  --key-hover: #4a4a5a;
+  --border: #3a3a4a;
+  --font: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem;
+  max-width: 420px;
+}
+
+/* --- Header --- */
+header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--text);
+}
+
+/* --- Game board --- */
+.game-board {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.35rem;
+  justify-content: center;
+}
+
+.tile {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  background: var(--tile-empty);
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.tile.filled {
+  border-color: var(--text-dim);
+  background: var(--surface);
+}
+
+.tile.gray {
+  background: var(--tile-gray);
+  border-color: var(--tile-gray);
+  color: var(--text);
+}
+
+.tile.yellow {
+  background: var(--tile-yellow);
+  border-color: var(--tile-yellow);
+  color: #fff;
+}
+
+.tile.green {
+  background: var(--tile-green);
+  border-color: var(--tile-green);
+  color: #fff;
+}
+
+/* Flip animation for evaluated tiles */
+.tile.evaluated {
+  animation: tileFlip 0.5s ease forwards;
+}
+
+@keyframes tileFlip {
+  0% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+.tile.evaluated.gray { background: var(--tile-gray); border-color: var(--tile-gray); }
+.tile.evaluated.yellow { background: var(--tile-yellow); border-color: var(--tile-yellow); }
+.tile.evaluated.green { background: var(--tile-green); border-color: var(--tile-green); }
+
+/* --- Message --- */
+.message {
+  min-height: 1.5em;
+  font-size: 1rem;
+  text-align: center;
+  color: var(--text-dim);
+}
+
+.message.win { color: var(--tile-green); }
+.message.loss { color: #c95c5c; }
+
+/* --- Play Again --- */
+.play-again {
+  padding: 0.6rem 1.2rem;
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--bg);
+  background: var(--tile-green);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.play-again:hover {
+  background: #6b9e64;
+  transform: scale(1.02);
+}
+
+.play-again.hidden {
+  display: none;
+}
+
+/* --- Stats --- */
+.stats {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+
+.stat-value {
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* --- Keyboard --- */
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  max-width: 360px;
+}
+
+.keyboard-row {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: center;
+}
+
+.key {
+  min-width: 28px;
+  height: 48px;
+  padding: 0 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: var(--key-bg);
+  color: var(--text);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.key:hover {
+  background: var(--key-hover);
+  transform: scale(1.05);
+}
+
+.key:active {
+  transform: scale(0.98);
+}
+
+.key.wide {
+  min-width: 44px;
+  font-size: 0.75rem;
+}
+
+.key.gray { background: var(--tile-gray); }
+.key.yellow { background: var(--tile-yellow); color: #fff; }
+.key.green { background: var(--tile-green); color: #fff; }

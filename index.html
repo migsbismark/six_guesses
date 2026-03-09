@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>6-Letter Word Game</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>6-Letter Word</h1>
+    </header>
+
+    <main>
+      <div class="game-board" id="gameBoard" aria-label="Game board"></div>
+      <div class="message" id="message" aria-live="polite"></div>
+      <button type="button" class="play-again hidden" id="playAgain">Play Again</button>
+    </main>
+
+    <aside class="stats" id="stats">
+      <div class="stat"><span class="stat-value" id="gamesPlayed">0</span> Games</div>
+      <div class="stat"><span class="stat-value" id="wins">0</span> Wins</div>
+      <div class="stat"><span class="stat-value" id="winStreak">0</span> Streak</div>
+    </aside>
+
+    <section class="keyboard" id="keyboard" aria-label="On-screen keyboard"></section>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
