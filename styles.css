@@ -218,3 +218,15 @@ header h1 {
 .key.gray { background: var(--tile-gray); }
 .key.yellow { background: var(--tile-yellow); color: #fff; }
 .key.green { background: var(--tile-green); color: #fff; }
+
+/* --- Watermark --- */
+.watermark {
+  position: fixed;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  opacity: 0.5;
+  pointer-events: none;
+  user-select: none;
+}
